@@ -1,0 +1,28 @@
+# Baza podataka za 1. labos (samo PostgreSQL).
+# Kopirajte ovu datoteku u korijen svog projekta pod imenom compose.yaml.
+#
+#   docker compose up -d      pokreni bazu u pozadini
+#   docker compose ps         je li baza pokrenuta i zdrava (STATUS: healthy)
+#   docker compose logs -f db prati zapise baze (Ctrl+C za izlaz)
+#   docker compose stop       zaustavi bazu (podaci ostaju)
+#   docker compose down       obriši kontejner (podaci ostaju u volumenu)
+#   docker compose down -v    obriši kontejner i volumen (SVI PODACI SE BRIŠU)
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: evplanner
+      POSTGRES_USER: evplanner
+      POSTGRES_PASSWORD: evplanner
+    ports:
+      - "15432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U evplanner -d evplanner"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  db-data:
