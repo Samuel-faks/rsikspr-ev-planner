@@ -1,0 +1,21 @@
+{
+  "creator": "rsikspr EV trip planner - mali testni graf (primjeri u lab1.md)",
+  "version": "1",
+  "nodes": [
+    {"id": "A", "name": "Alfa", "city": "Alfa", "lat": 45.00, "lon": 15.00, "powerKw": 50},
+    {"id": "B", "name": "Beta", "city": "Beta", "lat": 44.30, "lon": 15.90, "powerKw": 50},
+    {"id": "C", "name": "Gama", "city": "Gama", "lat": 44.60, "lon": 16.30, "powerKw": 150},
+    {"id": "D", "name": "Delta", "city": "Delta", "lat": 44.50, "lon": 15.20, "powerKw": 22},
+    {"id": "E", "name": "Epsilon", "city": "Epsilon", "lat": 43.60, "lon": 16.20, "powerKw": 150}
+  ],
+  "edges": [
+    {"source": "A", "target": "B", "distanceKm": 120.0},
+    {"source": "A", "target": "C", "distanceKm": 140.0},
+    {"source": "A", "target": "D", "distanceKm": 100.0},
+    {"source": "A", "target": "E", "distanceKm": 300.0},
+    {"source": "B", "target": "C", "distanceKm": 40.0},
+    {"source": "B", "target": "E", "distanceKm": 150.0},
+    {"source": "C", "target": "E", "distanceKm": 160.0},
+    {"source": "D", "target": "E", "distanceKm": 140.0}
+  ]
+}

@@ -1,0 +1,173 @@
+### Pozivi API-ja (IntelliJ HTTP klijent ili VS Code REST Client)
+### Aplikacija mora raditi na http://localhost:8080 (baza: docker compose up -d)
+
+@host = http://localhost:8080
+
+### ---------- Vozila ----------
+
+### Kreiraj vozilo -> 201 + Location
+POST {{host}}/api/v1/vehicles
+Content-Type: application/json
+
+{
+  "name": "Kompaktni EV",
+  "batteryKwh": 60,
+  "consumptionKwhPer100km": 18,
+  "maxChargePowerKw": 150
+}
+
+### Dohvati vozilo -> 200
+GET {{host}}/api/v1/vehicles/1
+
+### Vozilo ne postoji -> 404
+GET {{host}}/api/v1/vehicles/999999
+
+### Neispravno vozilo (prazno ime, prevelika baterija, nedostaje polje) -> 400
+POST {{host}}/api/v1/vehicles
+Content-Type: application/json
+
+{
+  "name": "",
+  "batteryKwh": 500,
+  "consumptionKwhPer100km": 18
+}
+
+### Neispravan JSON -> 400
+POST {{host}}/api/v1/vehicles
+Content-Type: application/json
+
+{ ovo nije json
+
+### ---------- Punionice ----------
+
+### Prva stranica (zadano page=0, size=20) -> 200
+GET {{host}}/api/v1/stations
+
+### Druga stranica od 5 -> 200
+GET {{host}}/api/v1/stations?page=1&size=5
+
+### size veći od 200 -> 400
+GET {{host}}/api/v1/stations?size=201
+
+### Negativna stranica -> 400
+GET {{host}}/api/v1/stations?page=-1
+
+### Dohvati punionicu -> 200
+GET {{host}}/api/v1/stations/S0001
+
+### Punionica ne postoji -> 404
+GET {{host}}/api/v1/stations/S9999
+
+### ---------- Putovanja ----------
+
+### Zagreb 1 -> Dubrovnik 1 (lab 7.6: 2 zaustavljanja, 492,5 km, ~372 min) -> 201 + Location
+POST {{host}}/api/v1/trips
+Content-Type: application/json
+
+{
+  "vehicleId": 1,
+  "fromStationId": "S0001",
+  "toStationId": "S0177",
+  "startSocPercent": 80,
+  "minSocPercent": 10,
+  "departureTime": "2026-11-15T08:00:00Z"
+}
+
+### Dohvati putovanje -> 200
+GET {{host}}/api/v1/trips/1
+
+### Putovanje ne postoji -> 404
+GET {{host}}/api/v1/trips/999999
+
+### Ista polazna i odredišna punionica -> 400
+POST {{host}}/api/v1/trips
+Content-Type: application/json
+
+{
+  "vehicleId": 1,
+  "fromStationId": "S0001",
+  "toStationId": "S0001",
+  "startSocPercent": 80,
+  "minSocPercent": 10,
+  "departureTime": "2026-11-15T08:00:00Z"
+}
+
+### startSocPercent nije veći od minSocPercent -> 400
+POST {{host}}/api/v1/trips
+Content-Type: application/json
+
+{
+  "vehicleId": 1,
+  "fromStationId": "S0001",
+  "toStationId": "S0177",
+  "startSocPercent": 20,
+  "minSocPercent": 20,
+  "departureTime": "2026-11-15T08:00:00Z"
+}
+
+### Pogreške validacije (izvan raspona, nedostaju polja) -> 400
+POST {{host}}/api/v1/trips
+Content-Type: application/json
+
+{
+  "vehicleId": 1,
+  "fromStationId": "",
+  "startSocPercent": 120
+}
+
+### Vozilo ne postoji -> 404
+POST {{host}}/api/v1/trips
+Content-Type: application/json
+
+{
+  "vehicleId": 999999,
+  "fromStationId": "S0001",
+  "toStationId": "S0177",
+  "startSocPercent": 80,
+  "minSocPercent": 10,
+  "departureTime": "2026-11-15T08:00:00Z"
+}
+
+### Punionica ne postoji -> 404
+POST {{host}}/api/v1/trips
+Content-Type: application/json
+
+{
+  "vehicleId": 1,
+  "fromStationId": "S0001",
+  "toStationId": "S9999",
+  "startSocPercent": 80,
+  "minSocPercent": 10,
+  "departureTime": "2026-11-15T08:00:00Z"
+}
+
+### Odredište nije dostižno -> 422
+### Prvo kreiraj vozilo s vrlo malim dometom (10 kWh, 50 kWh/100 km) ...
+# @name smallCar
+POST {{host}}/api/v1/vehicles
+Content-Type: application/json
+
+{
+  "name": "Mali domet",
+  "batteryKwh": 10,
+  "consumptionKwhPer100km": 50,
+  "maxChargePowerKw": 50
+}
+
+### ... pa s njim pokušaj Zagreb -> Dubrovnik uz minimalno 50 % -> 422
+POST {{host}}/api/v1/trips
+Content-Type: application/json
+
+{
+  "vehicleId": {{smallCar.response.body.id}},
+  "fromStationId": "S0001",
+  "toStationId": "S0177",
+  "startSocPercent": 80,
+  "minSocPercent": 50,
+  "departureTime": "2026-11-15T08:00:00Z"
+}
+
+### ---------- Actuator ----------
+
+### Zdravlje aplikacije (status UP, baza UP)
+GET {{host}}/actuator/health
