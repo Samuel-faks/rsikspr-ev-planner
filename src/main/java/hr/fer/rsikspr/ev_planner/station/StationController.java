@@ -22,10 +22,7 @@ public class StationController {
         this.stationRepository = stationRepository;
     }
 
-    /**
-     * Page and size are plain @RequestParams (not Pageable): the spec wants 400 for size > 200,
-     * while Pageable would silently cap it. Spring MVC validates @Min/@Max here by itself.
-     */
+
     @GetMapping
     public PagedModel<StationResponse> list(
             @RequestParam(defaultValue = "0") @Min(0) int page,

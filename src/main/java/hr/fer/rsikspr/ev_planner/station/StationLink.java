@@ -6,10 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.Immutable;
 
-/**
- * Undirected road link between two stations (always stationAId < stationBId).
- * Station ids are plain strings, not @ManyToOne: route planning loads all ~58,000 links at once.
- */
+
 @Entity
 @Immutable
 @Table(name = "station_link")

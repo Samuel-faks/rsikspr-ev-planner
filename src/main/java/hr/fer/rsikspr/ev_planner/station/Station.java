@@ -6,9 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.Immutable;
 
-/**
- * Charging station. Table and data come from Flyway migration V1__graph.sql; the app only reads them.
- */
+
 @Entity
 @Immutable
 @Table(name = "station")
